@@ -39,10 +39,10 @@ allRotations n = n: takeWhile (/=n) rotations
 
 palyndrom x = x == reverse x
 
-digits n base = reverse $ digits n base
+digits n base = reverse $ digits_ n base
     where
         digits_ 0 _ = []
-        digits_ n base = n`mod`base : digits (n`div`base) base
+        digits_ n base = n`mod`base : digits_ (n`div`base) base
 
 pithagoreans perimeterLimit = do
     a::Int <- [1..perimeterLimit]
@@ -53,6 +53,9 @@ pithagoreans perimeterLimit = do
     let perimeter = fst+snd+third
     [(fst*mul, snd*mul, third*mul) |
         gcd a b == 1, mul <- [1..div perimeterLimit perimeter]]
+
+makeNumber :: [Int] -> Int
+makeNumber = foldl (\a b -> a * 10 + b) 0
 
 primeSqrtCheck n = all (\x -> n `mod` x /= 0) candidates
     where
