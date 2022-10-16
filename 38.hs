@@ -1,12 +1,10 @@
 import qualified Data.List as L
 import Control.Monad (forM_)
-
-digits 0 _ = []
-digits n base = n`mod`base : digits (n`div`base) base
+import Euler (digits)
 
 uniqueList list = map head $ L.group $ L.sort list
 
-allPanDigitsFor n lim = concatMap (reverse.(`digits` 10)) $ (*) <$> [n] <*> [1..lim]
+allPanDigitsFor n lim = concatMap (`digits` 10) $ (*) <$> [n] <*> [1..lim]
 allPanDigits n = map (allPanDigitsFor n) [1..9]
 
 panDigits n = head . dropWhile ((<9).length) $ allPanDigits n
