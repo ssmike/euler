@@ -3,7 +3,7 @@ import Data.Array
 
 primes = primesFrom [2..]
     where
-        primesFrom (n:ns) = n:filter (\s -> s `mod` n /= 0) ns
+        primesFrom (n:ns) = n:primesFrom (filter (\s -> s `mod` n /= 0) ns)
 
 limNum = 100
 limPrimes = limNum
