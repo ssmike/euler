@@ -1,3 +1,4 @@
+import Euler
 import Data.Array
 import qualified Data.Array.ST as S
 import Control.Monad (forM_, when)
@@ -16,17 +17,7 @@ primesLim = n^2 + n*lim + lim
 --        primesFrom (n:ns) = n:primesFrom (filter (\s -> s `mod` n /= 0) ns)
 --primesA = listArray  (1, primesLim) (take primesLim primebits)
 
-primes = S.runSTArray $ do
-    isprime <- S.newArray (1, primesLim) True
-    S.writeArray isprime 1 False
-    forM_ [2..primesLim] $ \i -> do
-        checkPrime <- S.readArray isprime i
-        when checkPrime $
-            forM_ (takeWhile (<primesLim) (iterate (+i) (i*i))) $
-                \j -> S.writeArray isprime j False
-    return isprime
-    
-
+primes = primesArray primesLim
 
 checkPrime n = n > 0 && (primes ! n)
 

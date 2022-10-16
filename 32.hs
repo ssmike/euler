@@ -1,11 +1,5 @@
+import Euler
 import qualified Data.List as L
-
-allPermutes [] = [[]]
-
-allPermutes list = list >>= permutesFrom
-    where
-        permutesFrom n = map (n:) $ allPermutes withoutn
-            where withoutn = filter (/=n) list
 
 checkPermute :: [Int] -> [Int]
 checkPermute list = indices
@@ -14,12 +8,6 @@ checkPermute list = indices
         slice start len = toNum $ take len $ drop start list
 
         len = length list
-        slices fs sc = res == mul1 * mul2
-            where
-                mul1 = slice 0 fs
-                mul2 = slice fs sc
-                res = slice (fs + sc) len
-
         indices = do
             i <- [1..len]
             j <- [1..len-i]

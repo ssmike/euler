@@ -1,7 +1,4 @@
-digits 0 _ = []
-digits n base = n`mod`base : digits (n`div`base) base
-
-palyndrom x = x == reverse x 
+import Euler
 
 check x = palyndrom (digits x 2) && palyndrom (digits x 10)
 

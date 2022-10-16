@@ -1,14 +1,7 @@
 import qualified Data.List as L
 import Control.Monad (forM_, when)
+import Euler (pithagoreans)
 
-pithagoreans lim = do
-    a::Int <- [1..lim]
-    b::Int <- [1..a-1]
-    let fst = 2*a*b
-    let snd = a^2-b^2
-    let third = a^2+b^2
-    let perimeter = fst+snd+third
-    [(fst*mul, snd*mul, third*mul) | gcd a b == 1, mul <- [1..div lim perimeter]]
 
 perimeters lim = [a+b+c | (a, b, c) <- pithagoreans lim, a+b+c<=lim]
 

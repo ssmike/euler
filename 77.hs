@@ -1,9 +1,9 @@
 import Data.Array
+import Euler (primesGen)
 
 
-primes = primesFrom [2..]
-    where
-        primesFrom (n:ns) = n:primesFrom (filter (\s -> s `mod` n /= 0) ns)
+primes :: [Int]
+primes = map fromIntegral primesGen
 
 limNum = 100
 limPrimes = limNum

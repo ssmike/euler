@@ -1,15 +1,6 @@
-allPermutes [] = [[]]
+import Euler (allPermutes, primeSqrtCheck)
 
-allPermutes list = list >>= permutesFrom
-    where
-        permutesFrom n = map (n:) $ allPermutes withoutn
-            where withoutn = filter (/=n) list
-
-
-isPrime n = all (\x -> n `mod` x /= 0) candidates
-    where
-        candidates = takeWhile (\x -> x^2 < n) [2..]
-
+isPrime = primeSqrtCheck
 
 makeNumber :: [Int] -> Int
 makeNumber = foldl (\a b -> a * 10 + b) 0

@@ -1,7 +1,6 @@
-digits 0 _ = []
-digits n base = n`mod`base : digits (n`div`base) base
+import Euler (digits)
 
-numbers = 0:concatMap (\s -> reverse $ digits s 10) [1..]
+numbers = 0:concatMap (`digits`10) [1..]
 
 indices = take 7 $ iterate (*10) 1
 

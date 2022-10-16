@@ -1,8 +1,8 @@
 import Control.Monad (forM_)
+import Euler
 import Data.Array
 import Data.Map.Internal.Debug (balanced)
 
-factorial n = product [1..n]
 digitFacs = map factorial [0..9]
 
 
