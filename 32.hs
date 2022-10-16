@@ -1,0 +1,40 @@
+import qualified Data.List as L
+
+allPermutes [] = [[]]
+
+allPermutes list = list >>= permutesFrom
+    where
+        permutesFrom n = map (n:) $ allPermutes withoutn
+            where withoutn = filter (/=n) list
+
+checkPermute :: [Int] -> [Int]
+checkPermute list = indices
+    where
+        toNum = foldl (\acc r -> acc * 10 + r) 0
+        slice start len = toNum $ take len $ drop start list
+
+        len = length list
+        slices fs sc = res == mul1 * mul2
+            where
+                mul1 = slice 0 fs
+                mul2 = slice fs sc
+                res = slice (fs + sc) len
+
+        indices = do
+            i <- [1..len]
+            j <- [1..len-i]
+            if i + j < len then
+                let
+                    mul1 = slice 0 i
+                    mul2 = slice i j
+                    res = slice (i + j) len
+                in [res | mul1 * mul2 == res]
+            else []
+
+
+uniqueList list = map head $ L.group $ L.sort list
+
+main = let checked = allPermutes [1..9] >>= checkPermute in do
+    print checked
+    print $ sum $ uniqueList checked
+
