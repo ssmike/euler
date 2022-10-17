@@ -1,7 +1,10 @@
 module Euler where
 
 import qualified Data.Array.ST as S
+import qualified Data.List as L
 import Control.Monad (forM_, when)
+
+uniqueList list = map head $ L.group $ L.sort list
 
 allPermutes [] = [[]]
 

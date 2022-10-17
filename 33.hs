@@ -1,7 +1,5 @@
 import Control.Monad (when)
-import qualified Data.List as L
-
-uniqueList list = map head $ L.group $ L.sort list
+import Euler (uniqueList)
 
 fractions = uniqueList $ do
     nom <- filter filterNominator [10..99]

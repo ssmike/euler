@@ -19,9 +19,6 @@ checkPermute list = indices
                 in [res | mul1 * mul2 == res]
             else []
 
-
-uniqueList list = map head $ L.group $ L.sort list
-
 main = let checked = allPermutes [1..9] >>= checkPermute in do
     print checked
     print $ sum $ uniqueList checked

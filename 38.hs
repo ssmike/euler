@@ -1,8 +1,6 @@
 import qualified Data.List as L
 import Control.Monad (forM_)
-import Euler (digits)
-
-uniqueList list = map head $ L.group $ L.sort list
+import Euler (digits, uniqueList)
 
 allPanDigitsFor n lim = concatMap (`digits` 10) $ (*) <$> [n] <*> [1..lim]
 allPanDigits n = map (allPanDigitsFor n) [1..9]
