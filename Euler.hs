@@ -66,3 +66,17 @@ intersectSorted (x:xs) (y:ys)
     | x > y = intersectSorted (y:ys) (x:xs)
     | x < y = intersectSorted xs (y:ys)
     | otherwise = x:intersectSorted xs ys
+
+mergeSorted [] xs = xs
+mergeSorted xs [] = xs
+mergeSorted allx@(x:xs) ally@(y:ys)
+    | x < y = x:mergeSorted xs ally
+    | x == y = x:mergeSorted xs ys
+    | otherwise = y:mergeSorted allx ys
+
+subtractSorted xs [] = xs
+subtractSorted [] xs = []
+subtractSorted allx@(x:xs) ally@(y:ys)
+    | x < y = x:subtractSorted xs ally
+    | x == y = subtractSorted xs ys
+    | otherwise = subtractSorted allx ys
