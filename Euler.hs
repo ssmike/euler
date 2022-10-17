@@ -60,3 +60,9 @@ makeNumber = foldl (\a b -> a * 10 + b) 0
 primeSqrtCheck n = all (\x -> n `mod` x /= 0) candidates
     where
         candidates = takeWhile (\x -> x^2 < n) [2..]
+
+intersectSorted [] xs = []
+intersectSorted (x:xs) (y:ys)
+    | x > y = intersectSorted (y:ys) (x:xs)
+    | x < y = intersectSorted xs (y:ys)
+    | otherwise = x:intersectSorted xs ys
