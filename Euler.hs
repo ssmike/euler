@@ -64,6 +64,36 @@ primeSqrtCheck n = all (\x -> n `mod` x /= 0) candidates
     where
         candidates = takeWhile (\x -> x^2 < n) [2..]
 
+
+millerRabinTest :: [Integer] -> Integer -> Bool
+millerRabinTest _ 0 = False
+millerRabinTest _ 1 = False
+millerRabinTest withnesses n = all (checkPrimeWith . (`mod`n)) withnesses
+    where
+        modMul a b = (a*b) `mod` n
+
+        modPow _ 0 = 1
+        modPow a p
+            | p == 1 = a`mod`n
+            | p `mod` 2 == 1 = a `modMul` modPow a (p - 1)
+            | otherwise = modPow (modMul a a) (p `div` 2)
+
+        twoMultiples x
+            | x `mod` 2 == 1 = [x]
+            | otherwise = 2:twoMultiples (x `div` 2)
+
+        checkPrimeWith 0 = True
+        checkPrimeWith withness
+            | head powers == 1 = True
+            | last powers /= 1 = False
+            | (n-1) `elem` powers = True
+            | otherwise = False
+            where
+                (basePower:multiples) = reverse $ twoMultiples (n - 1)
+                base = modPow withness basePower
+                powers = scanl modPow base multiples
+
+
 intersectSorted [] xs = []
 intersectSorted (x:xs) (y:ys)
     | x > y = intersectSorted (y:ys) (x:xs)
