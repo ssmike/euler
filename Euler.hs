@@ -2,7 +2,7 @@ module Euler where
 
 import qualified Data.Array.ST as S
 import qualified Data.List as L
-import Control.Monad (forM_, when)
+import Control.Monad (forM_, when, guard)
 
 uniqueList list = map head $ L.group $ L.sort list
 
@@ -54,8 +54,8 @@ pithagoreans perimeterLimit = do
     let snd = a^2-b^2
     let third = a^2+b^2
     let perimeter = fst+snd+third
-    [(fst*mul, snd*mul, third*mul) |
-        gcd a b == 1, mul <- [1..div perimeterLimit perimeter]]
+    guard $ gcd a b == 1
+    [(fst*mul, snd*mul, third*mul) | mul <- [1..div perimeterLimit perimeter]]
 
 makeNumber :: Num a => [a] -> a
 makeNumber = foldl (\a b -> a * 10 + b) 0
