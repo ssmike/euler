@@ -57,7 +57,7 @@ pithagoreans perimeterLimit = do
     [(fst*mul, snd*mul, third*mul) |
         gcd a b == 1, mul <- [1..div perimeterLimit perimeter]]
 
-makeNumber :: [Int] -> Int
+makeNumber :: Num a => [a] -> a
 makeNumber = foldl (\a b -> a * 10 + b) 0
 
 primeSqrtCheck n = all (\x -> n `mod` x /= 0) candidates
