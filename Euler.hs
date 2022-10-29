@@ -48,8 +48,8 @@ digits n base = reverse $ digits_ n base
         digits_ n base = n`mod`base : digits_ (n`div`base) base
 
 pithagoreans perimeterLimit = do
-    a::Int <- [1..perimeterLimit]
-    b::Int <- [1..a-1]
+    a <- [1..perimeterLimit]
+    b <- [1..a-1]
     let fst = 2*a*b
     let snd = a^2-b^2
     let third = a^2+b^2
