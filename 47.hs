@@ -20,7 +20,7 @@ factorsNumberA = S.runSTArray $ do
 factorsNumber :: [Int]
 factorsNumber = map (factorsNumberA!) [1..limit]
 
-allnths :: forall a . Int -> [a] -> [[a]]
+allnths :: Int -> [a] -> [[a]]
 allnths n list = map (take n) $ tails list
 
 find n = filter ((==replicate n n) . snd) $ zip [1..limit] (allnths n factorsNumber)
