@@ -95,6 +95,7 @@ millerRabinTest withnesses n = all (checkPrimeWith . (`mod`n)) withnesses
 
 
 intersectSorted [] xs = []
+intersectSorted _ [] = []
 intersectSorted (x:xs) (y:ys)
     | x > y = intersectSorted (y:ys) (x:xs)
     | x < y = intersectSorted xs (y:ys)
