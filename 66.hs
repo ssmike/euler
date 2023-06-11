@@ -48,7 +48,7 @@ genSquares :: Integer -> [Integer]
 genSquares 0 = []
 genSquares x = do
     let muls = multiples x
-    powers <- forM muls  $ \(mul, pow) -> take (pow+1 `div` 2) $ iterate (*mul^2) 1
+    powers <- forM muls  $ \(mul, pow) -> take ((pow `div` 2)+1) $ iterate (*mul^2) 1
     return $ product powers
 
 
@@ -71,10 +71,7 @@ estimate = guardIf $ scanl addPair seed genDs
         
 
 main = do
-    --print $ take 200 genDs
     forM_ estimate print
-    --forM_ [1..10] $ print . genSquares
-    --forM_ [1..10] $ print . multiples
     --print $ multiples 6
     --print $ maximum $ soultionsUpTo 7
     --forM_ (zip (scanl1 max $ soultionsUpTo 1000) [1..]) print
