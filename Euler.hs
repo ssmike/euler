@@ -6,12 +6,12 @@ import Control.Monad (forM_, when, guard)
 
 uniqueList list = map head $ L.group $ L.sort list
 
+allPermutes :: [a] -> [[a]]
 allPermutes [] = [[]]
-
-allPermutes list = list >>= permutesFrom
-    where
-        permutesFrom n = map (n:) $ allPermutes withoutn
-            where withoutn = filter (/=n) list
+allPermutes xs = do
+    (index, value) <- zip [0..] xs
+    let (before, after) = splitAt index xs
+    (value:) <$> allPermutes (before ++ tail after)
 
 primesArray limit = S.runSTArray $ do
     isprime <- S.newArray (1, limit) True
