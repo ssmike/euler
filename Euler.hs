@@ -62,7 +62,7 @@ makeNumber = foldl (\a b -> a * 10 + b) 0
 
 primeSqrtCheck n = all (\x -> n `mod` x /= 0) candidates
     where
-        candidates = takeWhile (\x -> x^2 < n) [2..]
+        candidates = takeWhile (\x -> x^2 <= n) [2..]
 
 
 millerRabinTest :: [Integer] -> Integer -> Bool
@@ -101,6 +101,7 @@ intersectSorted (x:xs) (y:ys)
     | x < y = intersectSorted xs (y:ys)
     | otherwise = x:intersectSorted xs ys
 
+mergeSorted :: Ord a => [a] -> [a] -> [a]
 mergeSorted [] xs = xs
 mergeSorted xs [] = xs
 mergeSorted allx@(x:xs) ally@(y:ys)
