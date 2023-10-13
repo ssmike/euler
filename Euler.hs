@@ -39,6 +39,23 @@ divisorsUpTo limit = S.runSTArray $ do
     return anyDiv
 
 
+multiples :: Integer -> [(Integer, Int)]
+multiples = multiplesFrom 2
+    where
+        divBy x n
+            | n `mod` x /= 0 = (0, n)
+            | otherwise = let (pow, val) = divBy x (n `div` x)
+                          in (pow + 1, val)
+
+        multiplesFrom x n
+            | n == 1 = []
+            | n `mod` x == 0 =
+                let (pow, val) = divBy x n
+                in (x, pow): multiplesFrom (x + 1) val
+            | x * x >= n = [(n, 1)]
+            | otherwise = multiplesFrom (x + 1) n
+
+
 primesArray limit = S.runSTArray $ do
     isprime <- S.newArray (1, limit) True
     S.writeArray isprime 1 False

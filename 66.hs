@@ -3,7 +3,7 @@ import qualified Data.Set as Set
 import qualified Data.Array.ST as S
 import qualified Control.Monad.ST as ST
 import Data.Array
-import Euler (divisorsUpTo)
+import Euler (divisorsUpTo, multiples)
 
 
 multiply mul (a, b) (c, d) = (a*c + mul*b*d, b*c + a*d)
@@ -49,22 +49,6 @@ multiples2 n = divisors n
             where 
                 firstDiv = let val = divisorsArr ! x in min val x 
                 (power, remainder) = divBy firstDiv x
-
-multiples :: Integer -> [(Integer, Int)]
-multiples = multiplesFrom 2
-    where
-        divBy x n
-            | n `mod` x /= 0 = (0, n)
-            | otherwise = let (pow, val) = divBy x (n `div` x)
-                          in (pow + 1, val)
-
-        multiplesFrom x n
-            | n == 1 = []
-            | n `mod` x == 0 =
-                let (pow, val) = divBy x n
-                in (x, pow): multiplesFrom (x + 1) val
-            | x * x >= n = [(n, 1)]
-            | otherwise = multiplesFrom (x + 1) n
 
 
 genSquares :: Integer -> [Integer]
