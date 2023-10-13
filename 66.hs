@@ -2,8 +2,8 @@ import Control.Monad (guard, forM_, forM, when)
 import qualified Data.Set as Set
 import qualified Data.Array.ST as S
 import qualified Control.Monad.ST as ST
-import Data.STRef (newSTRef, readSTRef, writeSTRef)
 import Data.Array
+import Euler (divisorsUpTo)
 
 
 multiply mul (a, b) (c, d) = (a*c + mul*b*d, b*c + a*d)
@@ -30,30 +30,6 @@ soultionsUpTo lim = do
     let sol = solutions d
     guard $ sol /= []
     return (head sol, d)
-
-divisorsUpTo limit = S.runSTArray $ do
-    anyDiv <- S.newArray (2, limit) 0
-    lastPrime <- newSTRef 2
-    forM_ [2..limit] $ \i -> do
-        curDiv <- S.readArray anyDiv i
-        when (curDiv == 0) $ do
-            S.writeArray anyDiv i i
-            readSTRef lastPrime >>= \x -> S.writeArray anyDiv x i
-            writeSTRef lastPrime i
-        curDiv <- S.readArray anyDiv i
-        
-        let checkMuls p = do
-                next <- S.readArray anyDiv p
-                if next > p && i * next <= limit && next <= curDiv
-                    then checkMuls next >>= (return . (p:))
-                    else return [p]
-
-        checkedMuls <- checkMuls 2
-        forM_ checkedMuls $ \mul -> do
-            let num = mul * i
-            when (num <= limit) $ do
-                S.writeArray anyDiv num mul
-    return anyDiv
 
 divisorsChain = map divisorsUpTo $ iterate (*2) 20000
 
@@ -94,7 +70,7 @@ multiples = multiplesFrom 2
 genSquares :: Integer -> [Integer]
 genSquares 0 = []
 genSquares x = do
-    let muls = multiples2 x
+    let muls = multiples x
     powers <- forM muls  $ \(mul, pow) -> take ((pow `div` 2)+1) $ iterate (*mul^2) 1
     return $ product powers
 

@@ -1,6 +1,7 @@
 module Euler where
 
 import qualified Data.Array.ST as S
+import Data.STRef (newSTRef, readSTRef, writeSTRef)
 import qualified Data.List as L
 import Control.Monad (forM_, when, guard)
 
@@ -12,6 +13,31 @@ allPermutes xs = do
     (index, value) <- zip [0..] xs
     let (before, after) = splitAt index xs
     (value:) <$> allPermutes (before ++ tail after)
+
+divisorsUpTo limit = S.runSTArray $ do
+    anyDiv <- S.newArray (2, limit) 0
+    lastPrime <- newSTRef 2
+    forM_ [2..limit] $ \i -> do
+        curDiv <- S.readArray anyDiv i
+        when (curDiv == 0) $ do
+            S.writeArray anyDiv i i
+            readSTRef lastPrime >>= \x -> S.writeArray anyDiv x i
+            writeSTRef lastPrime i
+        curDiv <- S.readArray anyDiv i
+        
+        let checkMuls p = do
+                next <- S.readArray anyDiv p
+                if next > p && i * next <= limit && next <= curDiv
+                    then checkMuls next >>= (return . (p:))
+                    else return [p]
+
+        checkedMuls <- checkMuls 2
+        forM_ checkedMuls $ \mul -> do
+            let num = mul * i
+            when (num <= limit) $ do
+                S.writeArray anyDiv num mul
+    return anyDiv
+
 
 primesArray limit = S.runSTArray $ do
     isprime <- S.newArray (1, limit) True
