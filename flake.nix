@@ -16,7 +16,7 @@
 
       shellHook = ''
       git status
-      export ENV_NAME=haskell 
+      export ENV_NAME=euler-haskell 
       '';
 
       packages = [
