@@ -1,0 +1,26 @@
+/* [wxMaxima: input   start ] */
+f(x) :=a*x^3 +b*x^2 + c*x+d;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+solve([f(1)=1, f(2)=25, f(3)=101, f(4)=101+31+37+43+49], [a,b,c,d]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+(1001+1)/2;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+(5+1)/2;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+16/3 * 501^3 -6 * 501^2 + 14/3 * 501 - 3;
+/* [wxMaxima: input   end   ] */
+
+
+
