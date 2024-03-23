@@ -4,6 +4,7 @@ import qualified Data.Array.ST as S
 import Data.STRef (newSTRef, readSTRef, writeSTRef)
 import qualified Data.List as L
 import Control.Monad (forM_, when, guard)
+import Data.Array (array, (!))
 
 uniqueList list = map head $ L.group $ L.sort list
 
@@ -37,6 +38,24 @@ divisorsUpTo limit = S.runSTArray $ do
             when (num <= limit) $ do
                 S.writeArray anyDiv num mul
     return anyDiv
+
+phis n = mphi
+    where
+        mphi = array (2, n) [(i, phi i) | i <- [2..n]]
+        minDivisor = divisorsUpTo n
+
+        divBy n p
+            | n `mod` p /= 0 = (n, 1) 
+            | otherwise = (nr, pr * p)
+                where (nr, pr) = divBy (div n p) p
+
+        phi n
+            | p >= n = n - 1
+            | a == 1 = n - (n `div` p)
+            | otherwise = (mphi ! a) * (mphi ! b)
+                where
+                    p = minDivisor ! n
+                    (a, b) = divBy n $ minDivisor ! n
 
 
 multiples :: Integer -> [(Integer, Int)]
