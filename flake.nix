@@ -9,6 +9,7 @@
           randomgen
           parallel
           split
+          HUnit
         ]));
   in with pkgs; {
 
