@@ -1,4 +1,4 @@
-import PQ (makeHeap, mergeHeaps, getMin, extractMin, emptyHeap, checkHeapIntegrity, heapSize)
+import PQ (makeHeap, mergeHeaps, getMin, extractMin, checkHeapIntegrity, heapSize)
 import Test.HUnit
 import Control.Monad (forM_)
 import Data.List (sort)

@@ -2,47 +2,12 @@
 import Test.QuickCheck.Arbitrary (Arbitrary(..), arbitrarySizedNatural)
 import Test.QuickCheck.Gen (oneof, sized, Gen, frequency)
 import Test.QuickCheck (quickCheckAll, chooseInt, generate, getSize)
-import PQ (makeHeap, mergeHeaps, getMin, extractMin, emptyHeap, checkHeapIntegrity, heapSize)
+import PQ (makeHeap, mergeHeaps, getMin, extractMin, checkHeapIntegrity, heapSize)
 import Data.List (sort)
 import Debug.Trace
 
-data MergeTree = Leaf Int | MergeTree MergeTree MergeTree
-    deriving Show
-
-getMinFromTree (Leaf x) = x
-getMinFromTree (MergeTree sub1 sub2) = min (getMinFromTree sub1) (getMinFromTree sub2)
-
-makeHeapFromTree (Leaf x) = makeHeap x
-makeHeapFromTree (MergeTree sub1 sub2) = mergeHeaps (makeHeapFromTree sub1) (makeHeapFromTree sub2)
-
-buildListRepresentation (Leaf x) = [x]
-buildListRepresentation (MergeTree sub1 sub2) = sort $ buildListRepresentation sub1 ++ buildListRepresentation sub2
-
-arbitraryTreeOfSize :: Int -> Gen MergeTree
-arbitraryTreeOfSize 0 = arbitraryTreeOfSize 1
-arbitraryTreeOfSize 1 = Leaf `fmap` arbitrary
-arbitraryTreeOfSize size = do
-    sub <- chooseInt (1, size-1)
-    sub1 <- arbitraryTreeOfSize sub
-    sub2 <- arbitraryTreeOfSize $ size - sub
-    return $ MergeTree sub1 sub2
-
-instance Arbitrary MergeTree where
-    arbitrary = sized arbitraryTreeOfSize
-
-
-prop_Min :: MergeTree -> Bool
-prop_Min tree = getMinFromTree tree == getMin (makeHeapFromTree tree) 
-
 minsHeapRepr heap = if heapSize heap == 0 then [] else map getMin (take n $ iterate extractMin heap)
     where n = heapSize heap
-
-
-prop_Seq_Min tree = listRepr == minsHeapRepr heapRepr
-    where
-        listRepr = buildListRepresentation tree
-        heapRepr = makeHeapFromTree tree
-        n = length listRepr
 
 
 data OpTree = MakeHeap Int | ExtractMin OpTree | MergeHeaps OpTree OpTree
@@ -76,22 +41,34 @@ emulateOps (MakeHeap x) = [x]
 emulateOps (MergeHeaps sub1 sub2) = sort $ emulateOps sub1 ++ emulateOps sub2
 emulateOps (ExtractMin sub) = tail $ emulateOps sub
 
-
 executeOps (MakeHeap x) = makeHeap x
 executeOps (MergeHeaps sub1 sub2) = mergeHeaps (executeOps sub1) (executeOps sub2)
 executeOps (ExtractMin sub) = extractMin $ executeOps sub
 
-prop_Ops_Elements opTree = reverse listRepr == minsHeapRepr heapRepr
+verifyOpsIntegrity (MakeHeap x) = (True, makeHeap x)
+verifyOpsIntegrity (MergeHeaps sub1 sub2) = (r1 && r2 && checkHeapIntegrity (heapSize h) h, h)
+    where
+        (r1, h1) = verifyOpsIntegrity sub1
+        (r2, h2) = verifyOpsIntegrity sub2
+        h = mergeHeaps h1 h2
+
+verifyOpsIntegrity (ExtractMin sub) = (r && checkHeapIntegrity (heapSize nheap) nheap, nheap)
+    where 
+        (r, h) = verifyOpsIntegrity sub
+        nheap = extractMin h
+
+
+prop_Ops_Elements opTree = listRepr == minsHeapRepr heapRepr && opsIntegrity
     where
         listRepr = emulateOps opTree
         heapRepr = executeOps opTree
-        n = length listRepr
+        opsIntegrity = fst $ verifyOpsIntegrity opTree
 
 return []
 main = $quickCheckAll
 
 --main = do
---    tree :: OpTree <- generate $ arbitraryOpTree 0 3
---    print tree
-    --print $ getMinFromTree tree
-    --print $ getMin $ makeHeapFromTree tree
+--    let tree = MergeHeaps (ExtractMin (ExtractMin (MergeHeaps (MakeHeap (-1)) (MergeHeaps (MakeHeap 0) (MakeHeap 1))))) (MakeHeap 0)
+--    print $ emulateOps tree
+--    print $ minsHeapRepr $ executeOps tree
+--    print $ prop_Ops_Elements tree 
