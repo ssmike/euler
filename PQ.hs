@@ -19,52 +19,42 @@ mergeHeaps x y = BinHeap { minVal = findMin resultList, nodes = resultList, heap
         xs = nodes x
         ys = nodes y
 
-mergeNodeLists xs ys = normalize (calcBounds xs ys) $ mergeLists xs ys 
+mergeNodeLists xs ys = addLists Nothing xs ys
     where
         empty [] = True
         empty _ = False
 
-        normalize :: Ord valType => Int -> [(BinNode valType, Int)] -> [(BinNode valType, Int)]
-        normalize _ [] = []
-        normalize _ [x] = [x]
-        normalize uniqBound all@(x:y:rest)
-            | snd x /= snd y = if snd x >= uniqBound then all else x:normalize uniqBound (y:rest)
-            | not (empty rest) && snd (head rest) == snd x = x : normalize uniqBound (y:rest)
-            | otherwise = normalize uniqBound $ (mergeNodes (fst x) (fst y), snd x + snd y) : rest
+        mergePairs :: Ord valType => (BinNode valType, Int) -> (BinNode valType, Int) -> (BinNode valType, Int)
+        mergePairs x y = (mergeNodes (fst x) (fst y), snd x + snd y)
 
-        mergeLists [] x = x
-        mergeLists x [] = x
-        mergeLists allx@(x:xs) ally@(y:ys)
-            | snd x >= snd y = y: mergeLists allx ys 
-            | otherwise = x: mergeLists xs ally
+        addLists :: Ord valType => Maybe (BinNode valType, Int) -> [(BinNode valType, Int)] -> [(BinNode valType, Int)] -> [(BinNode valType, Int)]
+        addLists (Just x) xs ys = addLists Nothing (addOne x xs) ys
+        addLists Nothing [] ys = ys
+        addLists Nothing xs [] = xs
+        addLists Nothing allx@(x:xs) ally@(y:ys)
+            | snd x > snd y = y:allx
+            | snd x < snd y = x:ally
+            | otherwise = addLists (Just (mergePairs x y)) xs ys
 
---mergeNodeLists xs ys = normalize (calcBounds xs ys) $ mergeLists xs ys 
---    where
---        empty [] = True
---        empty _ = False
---
---        normalize :: Ord valType => Int -> [(BinNode valType, Int)] -> [(BinNode valType, Int)]
---        normalize _ [] = []
---        normalize _ [x] = [x]
---        normalize uniqBound all@(x:y:rest)
---            | snd x /= snd y = if snd x >= uniqBound then all else x:normalize uniqBound (y:rest)
---            | not (empty rest) && snd (head rest) == snd x = x : normalize uniqBound (y:rest)
---            | otherwise = normalize uniqBound $ (mergeNodes (fst x) (fst y), snd x + snd y) : rest
---
---        mergeLists [] x = x
---        mergeLists x [] = x
---        mergeLists allx@(x:xs) ally@(y:ys)
---            | snd x >= snd y = y: mergeLists allx ys 
---            | otherwise = x: mergeLists xs ally
+        addOne :: Ord valType => (BinNode valType, Int) -> [(BinNode valType, Int)] -> [(BinNode valType, Int)]
+        addOne y [] = [y]
+        addOne y allx@(x:xs)
+            | snd y < snd x = y: allx 
+            | otherwise = addOne (mergePairs y x)  xs
 
 findMin xs = minimum $ map (nodeValue . fst) xs
 
-getMin xs = minVal
+getMin = minVal
 
 extractMin :: Ord a => BinHeap a -> BinHeap a
-extractMin heap = toHeap $ resultNodes
+extractMin heap = toHeap resultNodes
     where
-        resultNodes = mergeNodeLists withoutMin (zip (children minNode) (iterate (`div`2) minSize))
-        withoutMin = filter ((/=minValue) . nodeValue . fst) (nodes heap)
+        resultNodes = mergeNodeLists withoutMin (zip (children minNode) (drop 1 $ iterate (`div`2) minSize))
+        withoutMin = filter ((/=minSize) . snd) (nodes heap)
         (minNode, minSize) = head (filter ((==minValue) . nodeValue . fst) (nodes heap))
         minValue = findMin $ nodes heap
+
+
+checkNodeIntegrity bound node = 
+checkHeapIntegrity heap = 
+    where
