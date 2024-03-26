@@ -110,7 +110,8 @@ digits n base = reverse $ digits_ n base
         digits_ n base = n`mod`base : digits_ (n`div`base) base
 
 pithagoreans perimeterLimit = do
-    a <- [1..perimeterLimit]
+    let aLimit = round $ sqrt $ fromIntegral perimeterLimit
+    a <- [1..aLimit+1]
     b <- [1..a-1]
     let fst = 2*a*b
     let snd = a^2-b^2
