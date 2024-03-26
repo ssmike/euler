@@ -10,6 +10,7 @@
           parallel
           split
           HUnit
+          QuickCheck
         ]));
   in with pkgs; {
 
