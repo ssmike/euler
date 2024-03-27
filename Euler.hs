@@ -6,7 +6,8 @@ import qualified Data.List as L
 import Control.Monad (forM_, when, guard)
 import Data.Array (array, (!))
 
-uniqueList list = map head $ L.group $ L.sort list
+uniqueSorted list = map head $ L.group list
+uniqueList list = uniqueSorted $ L.sort list
 
 allPermutes :: [a] -> [[a]]
 allPermutes [] = [[]]

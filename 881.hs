@@ -1,4 +1,4 @@
-import Euler (primesGen)
+import Euler (primesGen, uniqueSorted)
 import Control.Monad (forM_)
 
 polyAdd :: Num a => [a] -> [a] -> [a]
@@ -28,4 +28,4 @@ makeNumber dims = product $ zipWith (^) primesGen dims
 main = do
     print $ hyperCubeWidth [1, 2]
     let goodDims = map makeNumber $ filter ((>=10^4) . hyperCubeWidth) allPossibleDims
-    forM_ (scanl1 min goodDims) print 
+    forM_ (uniqueSorted $ scanl1 min goodDims) print 
