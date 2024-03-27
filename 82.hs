@@ -1,7 +1,6 @@
 import qualified Data.Map as M
 import Data.Array (Ix, Array, range, bounds, (!))
-import Data.List ()
-import PQ
+import qualified PQ
 
 class Eq nodeid => NodeCollection nodeid a where
     nodes :: a -> [nodeid]
@@ -36,30 +35,30 @@ instance Ix i => NodeCollection i (ListArrayGraph i w) where
 instance Ix i => Graph i w (ListArrayGraph i w) where
     edges (ArrayGraph nodes) node = incidenceList $ nodes ! node
 
-dijkstra :: (Num w, Graph i w g) => g -> i -> [(i, w)]
-dijkstra graph start = 
+
+dijkstra :: (Ord i, Ord w, Num w, Graph i w g) => g -> i -> [(i, w)]
+dijkstra graph start = answer . head $ dropWhile (not.final) $ iterate step seed
     where
-        seed = (M.empty, M.fromList [(start, 0)], makeHeap (0, start))
-        step (distances, candidateDistances, candidates)
+        answer (a, _) = M.assocs a
+        final (distances, candidates) = (==0) $ PQ.heapSize candidates
+        seed = (M.empty, PQ.makeHeap (0, start))
+        step (distances, candidates)
             | M.member minNode distances = skip
-            | M.lookup minNode candidateDistances == Just minDistance = (updatedDistances, M.delete minNode candidateDistances, updatedCandidates)
-            | otherwise = skip
+            | otherwise = (M.insert minNode minDistance distances, updatedCandidates)
             where
-                nextHeap = extractMin candidates
-                skip = (distances, candidates, nextHeap)
+                nextHeap = PQ.extractMin candidates
+                skip = (distances, nextHeap)
 
-                (minDistance, minNode) = findMin candidates
-                updatedDistances = M.insert minNode minDistance distances
+                (minDistance, minNode) = PQ.getMin candidates
 
-                candidateUpdates = 
-                updatedCandidates = 
-                updateCandidateDistances = 
+                updates = [(minDistance + w, nodeid) | (nodeid, w) <- edges graph minNode]
+                updatedCandidates = foldl1 PQ.mergeHeaps (map PQ.makeHeap updates ++ [nextHeap])
 
 --data Node idtype edgetype  = Node {nodeid :: idtype, edges :: [edgetype]};
 --class Ix i => Graph
 
 main = do
-    let heap = foldl1 mergeHeaps (map makeHeap [1..100])
-    print $ findMin heap
-    print $ findMin . extractMin $ heap
+    let heap = foldl1 PQ.mergeHeaps (map PQ.makeHeap [1..100])
+    print $ PQ.getMin heap
+    print $ PQ.getMin . PQ.extractMin $ heap
 
