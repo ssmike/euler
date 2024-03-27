@@ -3,7 +3,8 @@ import qualified Data.Set as Set
 import qualified Data.Array.ST as S
 import qualified Control.Monad.ST as ST
 import Data.Array
-import Euler (divisorsUpTo, multiples)
+import Control.Exception
+import Euler (divisorsUpTo, multiples, uniqueSorted)
 
 
 multiply mul (a, b) (c, d) = (a*c + mul*b*d, b*c + a*d)
@@ -50,11 +51,13 @@ multiples2 n = divisors n
                 firstDiv = let val = divisorsArr ! x in min val x 
                 (power, remainder) = divBy firstDiv x
 
+remainder muls = product $ map (\(p, m) -> p^(mod m 2)) muls
 
-genSquares :: Integer -> [Integer]
-genSquares 0 = []
-genSquares x = do
+genSquares :: Integer -> Integer -> [Integer]
+genSquares 0 _ = []
+genSquares x maxRem = do
     let muls = multiples x
+    guard $ remainder muls <= maxRem
     powers <- forM muls  $ \(mul, pow) -> take ((pow `div` 2)+1) $ iterate (*mul^2) 1
     return $ product powers
 
@@ -62,24 +65,25 @@ genSquares x = do
 genDs = do
     x <- [1..]
     let sum = x^2 - 1
-    y2 <- genSquares sum
+    y2 <- genSquares sum 1000
     let d = sum `div` y2
-    guard $ d > 0
+    assert (sum `mod` y2 == 0) $ guard $ d > 0
     guard $ d <= 1000
     return (x, d) 
 
 
-estimate = guardIf $ scanl addPair seed genDs
+estimate = uniqueSorted $ scanl addPair seed genDs
     where
         guardIf = takeWhile (\(x, s) -> Set.size s > 0)
         allLens = foldl (flip Set.insert) Set.empty (filter (not.isSquare) [1..1000])
-        addPair (cur, seen) (x, d) = (x, Set.delete d seen)
+        addPair (cur, seen) (x, d) = if Set.member d seen then (x, Set.delete d seen) else (cur, seen)
         seed = (0, allLens)
         
 
 main = do
+    --forM_ genDs print
     forM_ estimate print
-    --mapM_ (\x -> print (x, multiples2 x == multiples x)) [1..200000]
+    --mapM_ (\x -> print (x, multiples x)) [1..200000]
     --print $ maximum $ soultionsUpTo 7
     --forM_ (zip (scanl1 max $ soultionsUpTo 1000) [1..]) print
     --print $ map (head.solution) [5..7]
