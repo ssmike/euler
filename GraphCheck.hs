@@ -12,7 +12,7 @@ prop_Bamboo cells = dists == dijkstra graph (1::Int) (0::Int)
     where
         dists = zip [1..] $ scanl (+) 0 cells
         n = length cells
-        graph = ArrayGraph $ listArray (1, n+1) $ [ListArrayGraphNode {nodeid = i, incidenceList = [(i + 1, w)]} | (i, w) <- zip [1..n] cells ] ++ [ListArrayGraphNode { nodeid = n + 1, incidenceList = []} ]
+        graph = ListArrayGraph $ listArray (1, n+1) $ [ListArrayGraphNode {nodeid = i, incidenceList = [(i + 1, w)]} | (i, w) <- zip [1..n] cells ] ++ [ListArrayGraphNode { nodeid = n + 1, incidenceList = []} ]
 
 
 return []
