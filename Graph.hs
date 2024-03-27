@@ -30,14 +30,14 @@ class NodeCollection nodeid a => Graph nodeid edgemeta a where
 
 data ListArrayGraphNode i w = ListArrayGraphNode {nodeid :: i, incidenceList :: [(i, w)]}
     deriving Show
-newtype ListArrayGraph i w = ArrayGraph (Array i (ListArrayGraphNode i w))
+newtype ListArrayGraph i w = ListArrayGraph (Array i (ListArrayGraphNode i w))
     deriving Show
 
 instance Ix i => NodeCollection i (ListArrayGraph i w) where
-    nodes (ArrayGraph a) = range $ bounds a
+    nodes (ListArrayGraph a) = range $ bounds a
 
 instance Ix i => Graph i w (ListArrayGraph i w) where
-    edges (ArrayGraph nodes) node = incidenceList $ nodes ! node
+    edges (ListArrayGraph nodes) node = incidenceList $ nodes ! node
 
 
 dijkstra :: (Ord i, Num w, Ord w, Graph i w g) => g -> i -> w -> [(i, w)]

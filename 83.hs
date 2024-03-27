@@ -9,7 +9,7 @@ main = do
     let field = listArray (1, n) [listArray (1, n) row | row <- nums]
     let neighbours i j = [((i+1,j), field!(i+1)!j) | i < n] ++ [((i,j+1), field!i!(j+1)) | j < n] ++ [((i-1,j), field!(i-1)!j) | i > 1] ++ [((i,j-1), field!i!(j-1)) | j > 1]
     let fieldCells = [((i, j), ListArrayGraphNode { nodeid = (i, j), incidenceList = neighbours i j}) | i <- [1..n], j <- [1..n]]
-    let graph :: ListArrayGraph (Int, Int) Int = ArrayGraph $ array ((1, 1), (n, n)) fieldCells
+    let graph :: ListArrayGraph (Int, Int) Int = ListArrayGraph $ array ((1, 1), (n, n)) fieldCells
     let firstCell = field!1!1
     let dist = snd $ head $ filter (\((i, j), w) -> j == n && i == n) $ dijkstra graph (1::Int, 1::Int) (0::Int)
     print $ firstCell + dist
