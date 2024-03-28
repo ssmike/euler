@@ -149,7 +149,7 @@ powerByMod n a p
     where
         modMul a b = (a*b) `mod` n
 
-data RemaindersRing integral = RemainderClass {_remainder :: integral, _quotient :: !integral}
+data RemaindersRing integral = RemainderClass {_remainder :: !integral, _quotient :: !integral}
     deriving Show
 
 remainderBy p x = RemainderClass {_remainder = x `mod` p, _quotient = p}
