@@ -1,11 +1,12 @@
 module PQ (makeHeap, mergeHeaps, getMin, extractMin, BinHeap(EmptyHeap), checkHeapIntegrity, heapSize) where
+import Data.List (group, sort)
 
 data BinNode valType = BinNode {_nodeValue :: !valType, children :: ![BinNode valType]}
     deriving Show
-data BinHeap valType = BinHeap {nodes :: ![(BinNode valType, Int)], _minVal :: !valType, _heapSize :: !Int} | EmptyHeap
+data BinHeap valType = BinHeap {_nodes :: ![(BinNode valType, Int)], _minVal :: !valType, _heapSize :: !Int} | EmptyHeap
     deriving Show
 
-makeHeap x = BinHeap {  _minVal = x, nodes = [(BinNode{ _nodeValue = x, children = [] }, 1)], _heapSize = 1 }
+makeHeap x = BinHeap {  _minVal = x, _nodes = [(BinNode{ _nodeValue = x, children = [] }, 1)], _heapSize = 1 }
 
 _mergeNodes a b = if _nodeValue a < _nodeValue b
                     then BinNode{ _nodeValue = _nodeValue a, children = b: children a }
@@ -16,11 +17,11 @@ heapSize x = _heapSize x
 
 mergeHeaps EmptyHeap x = x
 mergeHeaps x EmptyHeap = x
-mergeHeaps x y = BinHeap { _minVal = _findMin resultList, nodes = resultList, _heapSize = heapSize x + heapSize y }
+mergeHeaps x y = BinHeap { _minVal = _findMin resultList, _nodes = resultList, _heapSize = heapSize x + heapSize y }
     where
         resultList = mergeNodeLists xs ys
-        xs = nodes x
-        ys = nodes y
+        xs = _nodes x
+        ys = _nodes y
 
 mergeNodeLists xs ys = addLists Nothing xs ys
     where
@@ -50,14 +51,14 @@ getMin x = _minVal x
 _findMin xs = minimum $ map (_nodeValue . fst) xs
 
 _toHeap [] = EmptyHeap
-_toHeap xs = BinHeap { nodes = xs, _minVal = _findMin xs, _heapSize = sum $ map snd xs }
+_toHeap xs = BinHeap { _nodes = xs, _minVal = _findMin xs, _heapSize = sum $ map snd xs }
 
 extractMin heap = _toHeap resultNodes
     where
         resultNodes = mergeNodeLists withoutMin $ reverse (zip (children minNode) (drop 1 $ iterate (`div`2) minSize))
-        withoutMin = filter ((/=minSize) . snd) (nodes heap)
-        (minNode, minSize) = head (filter ((==_minValue) . _nodeValue . fst) (nodes heap))
-        _minValue = _findMin $ nodes heap
+        withoutMin = filter ((/=minSize) . snd) (_nodes heap)
+        (minNode, minSize) = head (filter ((==_minValue) . _nodeValue . fst) (_nodes heap))
+        _minValue = _findMin $ _nodes heap
 
 
 _checkNodeIntegrity :: Ord valType => valType -> Int -> BinNode valType -> Bool
@@ -71,9 +72,10 @@ _checkNodeIntegrity bound size node = _nodeValue node >= bound && and childrenCh
 
 checkHeapIntegrity :: Ord valType => Int -> BinHeap valType -> Bool
 checkHeapIntegrity size EmptyHeap = size == 0
-checkHeapIntegrity size heap = minValueCheck && and nodeChecks && sizeCheck
+checkHeapIntegrity size heap = minValueCheck && and nodeChecks && sizeCheck && nodeListCheck
     where
-        nodeChecks = [_checkNodeIntegrity (_nodeValue node) size node | (node, size) <- nodes heap]
+        nodeChecks = [_checkNodeIntegrity (_nodeValue node) size node | (node, size) <- _nodes heap]
         minValueCheck = compare minValue (_minVal heap) == EQ
-        minValue = _findMin $ nodes heap
-        sizeCheck = size == sum (map snd $ nodes heap) && size == _heapSize heap
+        minValue = _findMin $ _nodes heap
+        sizeCheck = size == sum (map snd $ _nodes heap) && size == _heapSize heap
+        nodeListCheck = all ((<=1) . length) $ group $ sort $ map snd (_nodes heap) 
