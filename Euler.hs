@@ -40,6 +40,17 @@ divisorsUpTo limit = S.runSTArray $ do
                 S.writeArray anyDiv num mul
     return anyDiv
 
+multiplesBy primeDivisors 1 = []
+multiplesBy primeDivisors x = (firstDiv, power): multiplesBy primeDivisors remainder
+    where 
+        firstDiv = let val = primeDivisors ! x in min val x 
+        (power, remainder) = divBy firstDiv x
+
+        divBy x n
+            | n `mod` x /= 0 = (0, n)
+            | otherwise = let (pow, val) = divBy x (n `div` x)
+                          in (pow + 1, val)
+
 phis n = mphi
     where
         mphi = array (2, n) [(i, phi i) | i <- [2..n]]

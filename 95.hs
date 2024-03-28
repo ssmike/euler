@@ -1,4 +1,4 @@
-import Euler (divisorsUpTo)
+import Euler (divisorsUpTo, multiplesBy)
 import Data.Array ((!))
 import Data.Foldable (maximumBy)
 import Control.Monad (forM_)
@@ -8,17 +8,7 @@ limit = 1*10^6
 
 divisors = divisorsUpTo limit
 
-multiples 1 = []
-multiples x = (firstDiv, power): multiples remainder
-    where 
-        firstDiv = let val = divisors ! x in min val x 
-        (power, remainder) = divBy firstDiv x
-
-        divBy x n
-            | n `mod` x /= 0 = (0, n)
-            | otherwise = let (pow, val) = divBy x (n `div` x)
-                          in (pow + 1, val)
-
+multiples = multiplesBy divisors
 
 
 amicableOf x = product (map sumMuls $ multiples x) - x
