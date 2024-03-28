@@ -139,19 +139,25 @@ primeSqrtCheck n = all (\x -> n `mod` x /= 0) candidates
     where
         candidates = takeWhile (\x -> x^2 <= n) [2..]
 
+multiplyByMod n a b = (a*b) `mod` n
+
+powerByMod _ 0 _ = 1
+powerByMod n a p
+    | p == 1 = a`mod`n
+    | p `mod` 2 == 1 = a `modMul` powerByMod n a (p - 1)
+    | otherwise = powerByMod n (modMul a a) (p `div` 2)
+    where
+        modMul a b = (a*b) `mod` n
+
 
 millerRabinTest :: [Integer] -> Integer -> Bool
 millerRabinTest _ 0 = False
 millerRabinTest _ 1 = False
 millerRabinTest withnesses n = all (checkPrimeWith . (`mod`n)) withnesses
     where
-        modMul a b = (a*b) `mod` n
+        modMul = multiplyByMod n
+        modPow = powerByMod n
 
-        modPow _ 0 = 1
-        modPow a p
-            | p == 1 = a`mod`n
-            | p `mod` 2 == 1 = a `modMul` modPow a (p - 1)
-            | otherwise = modPow (modMul a a) (p `div` 2)
 
         twoMultiples x
             | x `mod` 2 == 1 = [x]
