@@ -149,6 +149,25 @@ powerByMod n a p
     where
         modMul a b = (a*b) `mod` n
 
+data RemaindersRing integral = RemainderClass {_remainder :: integral, _quotient :: !integral}
+    deriving Show
+
+remainderBy p x = RemainderClass {_remainder = x `mod` p, _quotient = p}
+remainderValue = _remainder
+
+instance (Integral integral) => Num (RemaindersRing integral) where
+    negate a = a {_remainder = _quotient a - _remainder a}
+    (+) a b = RemainderClass {_remainder = (_remainder a + _remainder b) `mod` quotient , _quotient = quotient}
+        where
+            quotient = max (_quotient a) (_quotient b)
+    (*) a b = RemainderClass {_remainder = (_remainder a * _remainder b) `mod` quotient , _quotient = quotient}
+        where
+            quotient = max (_quotient a) (_quotient b)
+    fromInteger x = RemainderClass (fromInteger x) 0
+
+    abs = id
+    signum = id
+
 
 millerRabinTest :: [Integer] -> Integer -> Bool
 millerRabinTest _ 0 = False
