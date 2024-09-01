@@ -82,8 +82,8 @@ estimate = uniqueSorted $ scanl addPair seed genDs
 
 main = do
     --forM_ genDs print
-    forM_ estimate print
-    --mapM_ (\x -> print (x, multiples x)) [1..200000]
+    --forM_ estimate print
+    print $ all (\x -> multiples2 x == multiples x) [1..200000]
     --print $ maximum $ soultionsUpTo 7
     --forM_ (zip (scanl1 max $ soultionsUpTo 1000) [1..]) print
     --print $ map (head.solution) [5..7]

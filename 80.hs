@@ -1,15 +1,5 @@
-import Euler (digits)
+import Euler (digits, integralSqrt)
 
-
-integralSqrt :: Integer -> Integer
-integralSqrt n = lookForBound 0 (n + 1)
-    where
-        lookForBound l r
-            | l + 1 >= r = l
-            | m * m > n = lookForBound l m
-            | otherwise = lookForBound m r
-            where m = (l + r) `div` 2
-            
 
 digits100 x = sum digs
     where 

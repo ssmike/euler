@@ -16,6 +16,16 @@ allPermutes xs = do
     let (before, after) = splitAt index xs
     (value:) <$> allPermutes (before ++ tail after)
 
+
+integralSqrt :: Integer -> Integer
+integralSqrt n = lookForBound 0 (n + 1)
+    where
+        lookForBound l r
+            | l + 1 >= r = l
+            | m * m > n = lookForBound l m
+            | otherwise = lookForBound m r
+            where m = (l + r) `div` 2
+
 divisorsUpTo limit = S.runSTArray $ do
     anyDiv <- S.newArray (2, limit) 0
     lastPrime <- newSTRef 2
