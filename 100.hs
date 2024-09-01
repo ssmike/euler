@@ -5,9 +5,9 @@ checkNumber x = m * (m + 1) == x
     where
         m = integralSqrt x
     
-chain = map (\x -> x * (x - 1)) [10^12..]
+chain = map (\x -> x * (x - 1)) [10^12+1..]
 
-filteredChain = filter (checkNumber . (`div`2)) $ filter even chain
+filteredChain = filter (checkNumber . (`div`2))
 
 main = do
     print $ checkNumber $ 21 * 20
