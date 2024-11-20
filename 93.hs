@@ -1,14 +1,23 @@
+import Euler (uniqueList)
 import Control.Monad (guard)
-allResults :: [Int] -> [Int]
+
+subsets [] = [([], [])]
+subsets (a:as) = do
+    (fs, sc) <- subsets as
+    [(a:fs, sc), (fs, a:sc)]
+
+allResults :: [Int] -> [Rational]
 allResults [] = []
-allResults [a] = [a]
+allResults [a] = [toRational a]
 allResults nums = do
     let allTrue _ _ = True
-    let divisible a b = 0 == mod a b
-    (op, guardCond) <- [((+), allTrue), ((-), allTrue), ((*), allTrue), (div, divisible)]
-    len <- [1..length nums - 1]
-    let fs = take len nums
-    let sc = drop len nums
+    let divisible a b = b /= 0
+    (op, guardCond) <- [((+), allTrue), ((-), allTrue), ((*), allTrue), ((/), divisible)]
+    --len <- [1..length nums - 1]
+    --let fs = take len nums
+    --let sc = drop len nums
+    (fs, sc) <- subsets nums
+    guard $ fs /= [] && sc /= []
     fresult <- allResults fs
     sresult <- allResults sc
     guard $ guardCond fresult sresult
@@ -17,15 +26,25 @@ allResults nums = do
 all4 = do
     a <- [0..9]
     b <- [0..9]
+    guard $ b > a
     c <- [0..9]
+    guard $ c > b
     d <- [0..9]
+    guard $ d > c
     return [a, b, c, d]
 
-explore = do
-    s4 <- all4
-    let ress = allResults s4
 
+consecutiveStart ls = length $ takeWhile id $ zipWith (==) [1..] vals
+    where
+        vals = dropWhile (<= 0) $ uniqueList $ filter isInt ls
+        isInt x = x == fromIntegral (round x)
+
+explore = map (\ls -> (consecutiveStart $ allResults ls, ls)) all4
 
 main = do
-    print all4
-    print $ allResults [1..4]
+    print $ length $ subsets [1..4]
+    --print all4
+    print $ uniqueList $ allResults [1..4]
+    print $ consecutiveStart $ allResults [1..4]
+    print $ consecutiveStart [5, 4, 2, 3, 1, 1, 6]
+    print $ maximum explore
