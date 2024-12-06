@@ -9,7 +9,7 @@ primes = filter (primesArray limit !) [1..limit]
 
 
 chains :: [[Integer]]
-chains = chainsFrom 1 primes
+chains = map (2:) $ chainsFrom 2 (dropWhile (<=2) primes)
     where
         chainsFrom _ [] = []
         chainsFrom acc (p:primes)
@@ -38,4 +38,4 @@ main = do
     let filtered = map product $ filter check chains
 
     print $ sum filtered
-    --forM_ filtered print
+    -- forM_ filtered print
