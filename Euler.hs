@@ -103,7 +103,7 @@ primesArray limit = S.runSTArray $ do
     forM_ [2..limit] $ \i -> do
         checkPrime <- S.readArray isprime i
         when checkPrime $
-            forM_ (takeWhile (<limit) (iterate (+i) (i*i))) $
+            forM_ (takeWhile (<=limit) (iterate (+i) (i*i))) $
                 \j -> S.writeArray isprime j False
     return isprime
 
