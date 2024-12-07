@@ -1,13 +1,11 @@
 import Euler (primesArray)
 import Data.Array ((!))
 import Control.Monad (forM_)
+import System.Environment as E
 
 
-limit = 10^8
-
-
-chains :: [Integer] -> [[Integer]]
-chains primes = map (2:) $ chainsFrom 2 (dropWhile (<=2) primes)
+chains :: [Integer] -> Integer -> [[Integer]]
+chains primes limit = map (2:) $ []: chainsFrom 2 (dropWhile (<=2) primes)
     where
         chainsFrom _ [] = []
         chainsFrom acc (p:primes)
@@ -28,11 +26,13 @@ alldivs (x:xs) = do
 checkList isprime ls = all (isprime . uncurry (+)) (alldivs ls)
 
 main = do
+    args <- E.getArgs
+    let limit = read (head args) :: Integer
     let primesA = primesArray limit
     let primes = filter (primesA !) [1..limit]
     let check = checkList (primesA !)
-    let filtered = map product $ filter check (chains primes)
-
+    let filtered = map product $ filter check (chains primes limit)
 
     print $ sum filtered
-    -- forM_ filtered print
+    forM_ (take 10 filtered) print
+    forM_ (take 10 $ chains primes limit) $ \x -> print (x, check x)
