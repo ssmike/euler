@@ -1,15 +1,13 @@
-import Euler (primesArray, millerRabinTest)
+import Euler (primesArray)
 import Data.Array ((!))
 import Control.Monad (forM_)
-import qualified System.Random as R
 
 
 limit = 10^8
-primes = filter (primesArray limit !) [1..limit]
 
 
-chains :: [[Integer]]
-chains = map (2:) $ chainsFrom 2 (dropWhile (<=2) primes)
+chains :: [Integer] -> [[Integer]]
+chains primes = map (2:) $ chainsFrom 2 (dropWhile (<=2) primes)
     where
         chainsFrom _ [] = []
         chainsFrom acc (p:primes)
@@ -29,13 +27,12 @@ alldivs (x:xs) = do
 
 checkList isprime ls = all (isprime . uncurry (+)) (alldivs ls)
 
-genNumbers = R.randoms . R.mkStdGen <$> R.randomIO
-
 main = do
-    primeCandidates <- take 40 `fmap` genNumbers
-    let isPrime = millerRabinTest primeCandidates
-    let check = checkList isPrime
-    let filtered = map product $ filter check chains
+    let primesA = primesArray limit
+    let primes = filter (primesA !) [1..limit]
+    let check = checkList (primesA !)
+    let filtered = map product $ filter check (chains primes)
+
 
     print $ sum filtered
     -- forM_ filtered print
