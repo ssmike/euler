@@ -9,7 +9,7 @@ data Vec a = Vec a a
     deriving (Show, Eq, Ord)
 
 instance (Num a) => Num (Vec a) where
-    (Vec x1 y1) + (Vec x2 y2) = Vec (x1 + y1) (x2 + y2)
+    (Vec x1 y1) + (Vec x2 y2) = Vec (x1 + x2) (y1 + y2)
     negate (Vec x y) = Vec (-x) (-y)
 
 instance Functor Vec where
@@ -61,4 +61,12 @@ explorePairs pts = do
 main = do
     let segments = take 5000 pointPairs
     print $ take 1 pointPairs
+
+    let (l1, l2, l3) = ((Vec 27 44, Vec 12 32), (Vec 46 53, Vec 17 62), (Vec 46 70, Vec 22 40))
+    print (l1, l2, l3)
+    print $ haveIntersection l1 l3
+    print $ haveIntersection l2 l3
+    print $ haveIntersection (Vec 0 1, Vec 1 0) (Vec 0 0, Vec 1 1)
+
+    print $ length $ uniqueList $ explorePairs [l1, l2, l3]
     print $ length $ uniqueList $ explorePairs segments
